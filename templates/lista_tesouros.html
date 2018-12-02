@@ -17,13 +17,13 @@
         </tr>
       </thead>
       <tbody>
-        {% for tesouro in lista_tesouros %}
+        {% for tesouro in object_list %}
         <tr>
           <td><img src="{{ tesouro.img_tesouro.url }}"></td>
           <td>{{ tesouro.nome }}</td>
-          <td>{{ tesouro.preco }}</td>
+          <td>{{ tesouro.preco|floatformat:2 }}</td>
           <td>{{ tesouro.quantidade }}</td>
-          <td>{{ tesouro.valor_total }}</td>
+          <td>{{ tesouro.valor_total|floatformat:2 }}</td>
           <td><a href="{% url "editar" tesouro.id %}"><img src="{% static 'imgs/edit.png' %}" alt="Editar"></a></td>
           <td>
             <form method="POST" action="{% url "excluir" tesouro.id %}">
@@ -39,7 +39,7 @@
       <tfoot>
         <tr>
           <td colspan="4">Total geral</td>
-          <td> {{ total_geral }}</td>
+          <td> {{ total_geral|floatformat:2 }}</td>
           <td colspan="2"></td>
         </tr>
       </tfoot>
