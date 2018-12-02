@@ -6,10 +6,11 @@ from django.forms import ModelForm
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Tesouro
 
 # Create your views here.
-class ListarTesouros(ListView):
+class ListarTesouros(LoginRequiredMixin,ListView):
     model = Tesouro
     template_name = 'lista_tesouros.html'
 
@@ -29,11 +30,11 @@ class ListarTesouros(ListView):
         context.update({'total_geral': valor_total})
         return context
 
-class RemoverTesouro(DeleteView):
+class RemoverTesouro(LoginRequiredMixin,DeleteView):
     model = Tesouro
     success_url = reverse_lazy('lista_tesouros')
 
-class SalvarTesouro():
+class SalvarTesouro(LoginRequiredMixin):
     model = Tesouro
     fields = ['nome','quantidade','preco','img_tesouro']
     template_name = 'salvar_tesouro.html'
