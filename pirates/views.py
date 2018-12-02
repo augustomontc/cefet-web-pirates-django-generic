@@ -3,9 +3,10 @@ from django.db.models import F,ExpressionWrapper,DecimalField
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.forms import ModelForm
-from django.urls import reverse
-
+from django.urls import reverse, reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
 from .models import Tesouro
+
 # Create your views here.
 class ListarTesouros(View):
     def get(self,request):
@@ -20,33 +21,20 @@ class ListarTesouros(View):
             valor_total += tesouro.valor_total
         return render(request,"lista_tesouros.html",{"lista_tesouros":lst_tesouros,
                                                      "total_geral":valor_total})
-class TesouroForm(ModelForm):
-    class Meta:
-        model = Tesouro
-        fields = ['nome', 'quantidade', 'preco', 'img_tesouro']
-        labels = {
-            "img_tesouro": "Imagem"
-        }
-
-class SalvarTesouro(View):
-    def get_tesouro(self,id):
-        if id:
-            return Tesouro.objects.get(id=id)
-        return None
-
-    def get(self,request,id=None):
-        return render(request,"salvar_tesouro.html",{"tesouroForm":TesouroForm(instance=self.get_tesouro(id))})
-
-    def post(self,request,id=None):
-        form = TesouroForm(request.POST,request.FILES, instance=self.get_tesouro(id))
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('lista_tesouros') )
-        else:
-            return render(request,"salvar_tesouro.html",{"tesouroForm":form})
 
 class RemoverTesouro(View):
     def get(self,request,id):
         Tesouro.objects.get(id=id).delete()
         return HttpResponseRedirect(reverse('lista_tesouros') )
+
+class SalvarTesouro():
+    model = Tesouro
+    fields = ['nome','quantidade','preco','img_tesouro']
+    template_name = 'salvar_tesouro.html'
+    success_url = reverse_lazy('lista_tesouros')
+
+class InserirTesouro(SalvarTesouro,CreateView):
+    pass
+
+class AtualizarTesouro(SalvarTesouro,UpdateView):
+    pass
